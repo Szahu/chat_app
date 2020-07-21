@@ -3,14 +3,15 @@ import 'package:chat_app/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/Utils/utils.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   String _inputEmail;
   String _inputPassword;
+  String _inputPasswordConfrim;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -18,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Widget _buildTitleText() {
       return CenterHorizontal(
         Text(
-          'Sign in',
+          'Sign up',
           style: TextStyle(
               color: Colors.blue[400],
               fontSize: 40,
@@ -31,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return Container(
         decoration: textInputBoxDecoration,
         child: TextFormField(
-          onChanged: (value) => _inputEmail = value,
+          onChanged: (value) => _inputEmail = value.trimRight(),
           textAlign: TextAlign.center,
           decoration: textInputDecoration.copyWith(hintText: 'Email'),
         ),
@@ -42,10 +43,23 @@ class _LoginScreenState extends State<LoginScreen> {
       return Container(
         decoration: textInputBoxDecoration,
         child: TextFormField(
-          onChanged: (value) => _inputPassword = value,
+          onChanged: (value) => _inputPassword = value.trimRight(),
           textAlign: TextAlign.center,
           obscureText: true,
           decoration: textInputDecoration.copyWith(hintText: 'Password'),
+        ),
+      );
+    }
+
+    Widget _buildPasswordRepeatInputField() {
+      return Container(
+        decoration: textInputBoxDecoration,
+        child: TextFormField(
+          onChanged: (value) => _inputPasswordConfrim = value.trimRight(),
+          textAlign: TextAlign.center,
+          obscureText: true,
+          decoration:
+              textInputDecoration.copyWith(hintText: 'Confirm Password'),
         ),
       );
     }
@@ -59,14 +73,25 @@ class _LoginScreenState extends State<LoginScreen> {
               side: BorderSide(color: Colors.blue, width: 3.0),
             ),
             child: Text(
-              'Sign In',
+              'Sign up!',
               style: TextStyle(fontSize: 23.0, color: Colors.white),
             ),
             padding: EdgeInsets.symmetric(horizontal: 37.0, vertical: 10.0),
             color: Colors.blue,
             onPressed: () {
-              //AuthService().registerWithEmailAndPassword(
-              //    _inputeEmail, _inputePassword);
+              // TODO add helper texts with errors
+              if (_inputEmail != null &&
+                  _inputPassword != null &&
+                  _inputPasswordConfrim != null) {
+                if (_inputPassword == _inputPasswordConfrim) {
+                  AuthService().registerWithEmailAndPassword(
+                      _inputEmail, _inputPasswordConfrim);
+                } else {
+                  print('Passwords must match!');
+                }
+              } else {
+                print('No field can be empty!');
+              }
             }),
       );
     }
@@ -123,6 +148,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildEmailInputField(),
                   SizedBox(height: 35),
                   _buildPasswordInputField(),
+                  SizedBox(height: 35),
+                  _buildPasswordRepeatInputField(),
                   SizedBox(height: 35),
                   _buildSignInButton(),
                   SizedBox(height: 20),
