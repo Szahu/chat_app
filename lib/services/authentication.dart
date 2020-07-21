@@ -10,6 +10,7 @@ class AuthService {
     return _instance;
   }
 
+  // TODO add user model
   Future registerWithEmailAndPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
@@ -20,4 +21,10 @@ class AuthService {
       print(e.toString());
     }
   }
+
+  // TODO add loging in with email and pass
+
+  // TODO add loging in with google
+
+  // TODO add loging in with facebook
 }
