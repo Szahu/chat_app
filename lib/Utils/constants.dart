@@ -25,27 +25,3 @@ BoxDecoration textInputBoxDecoration = BoxDecoration(
     ),
   ],
 );
-
-class DecoratedRaisedButton extends StatelessWidget {
-  DecoratedRaisedButton({this.label, this.onPressed});
-  final label;
-  final onPressed;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: textInputBoxDecoration.copyWith(color: Colors.transparent),
-      child: RaisedButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100.0),
-            side: BorderSide(color: Colors.blue, width: 3.0),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 23.0, color: Colors.white),
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 37.0, vertical: 10.0),
-          color: Colors.blue,
-          onPressed: onPressed),
-    );
-  }
-}

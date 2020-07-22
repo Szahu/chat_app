@@ -1,9 +1,12 @@
 import 'package:chat_app/Utils/constants.dart';
-import 'package:chat_app/services/authentication.dart';
+import 'package:chat_app/screens/login_screen.dart';
+import 'package:chat_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/Utils/utils.dart';
 
 class RegisterScreen extends StatefulWidget {
+  final Function toggleView;
+  RegisterScreen({this.toggleView});
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -96,6 +99,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     }
 
+    Widget _buildRegisterButton() {
+      return Container(
+        decoration: textInputBoxDecoration.copyWith(color: Colors.transparent),
+        child: RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              side: BorderSide(color: Colors.blue, width: 3.0),
+            ),
+            child: Text(
+              'Sign in',
+              style: TextStyle(fontSize: 20.0, color: Colors.white),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.0),
+            color: Colors.blue,
+            onPressed: () {
+              widget.toggleView();
+            }),
+      );
+    }
+
     Widget _buildLogInIcons() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -159,6 +182,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   SizedBox(height: 18),
                   _buildLogInIcons(),
+                  SizedBox(height: 20.0),
+                  _buildRegisterButton(),
                   SizedBox(height: 20.0),
                 ],
               ),

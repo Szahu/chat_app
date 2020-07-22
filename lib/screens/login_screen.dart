@@ -1,9 +1,12 @@
 import 'package:chat_app/Utils/constants.dart';
-import 'package:chat_app/services/authentication.dart';
+import 'package:chat_app/screens/register_screen.dart';
+import 'package:chat_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/Utils/utils.dart';
 
 class LoginScreen extends StatefulWidget {
+  final Function toggleView;
+  LoginScreen({this.toggleView});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -31,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return Container(
         decoration: textInputBoxDecoration,
         child: TextFormField(
-          onChanged: (value) => _inputEmail = value,
+          onChanged: (value) => _inputEmail = value.trimRight(),
           textAlign: TextAlign.center,
           decoration: textInputDecoration.copyWith(hintText: 'Email'),
         ),
@@ -42,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return Container(
         decoration: textInputBoxDecoration,
         child: TextFormField(
-          onChanged: (value) => _inputPassword = value,
+          onChanged: (value) => _inputPassword = value.trimRight(),
           textAlign: TextAlign.center,
           obscureText: true,
           decoration: textInputDecoration.copyWith(hintText: 'Password'),
@@ -64,9 +67,58 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             padding: EdgeInsets.symmetric(horizontal: 37.0, vertical: 10.0),
             color: Colors.blue,
+            onPressed: () async {
+              if (_inputEmail != null && _inputPassword != null) {
+                dynamic result = await AuthService()
+                    .signInWithEmailAndPassword(_inputEmail, _inputPassword);
+                switch (result) {
+                  case 1:
+                    {
+                      print('invalid email');
+                    }
+                    break;
+                  case 2:
+                    {
+                      print('invalid password');
+                    }
+                    break;
+                  case 3:
+                    {
+                      print('user not found');
+                    }
+                    break;
+                  case 4:
+                    {
+                      print('too many requesst');
+                    }
+                    break;
+                  default:
+                    {
+                      print('somehing went wrong : )');
+                    }
+                    break;
+                }
+              }
+            }),
+      );
+    }
+
+    Widget _buildRegisterButton() {
+      return Container(
+        decoration: textInputBoxDecoration.copyWith(color: Colors.transparent),
+        child: RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100.0),
+              side: BorderSide(color: Colors.blue, width: 3.0),
+            ),
+            child: Text(
+              'Register',
+              style: TextStyle(fontSize: 20.0, color: Colors.white),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.0),
+            color: Colors.blue,
             onPressed: () {
-              //AuthService().registerWithEmailAndPassword(
-              //    _inputeEmail, _inputePassword);
+              widget.toggleView();
             }),
       );
     }
@@ -132,6 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 18),
                   _buildLogInIcons(),
+                  SizedBox(height: 20.0),
+                  _buildRegisterButton(),
                   SizedBox(height: 20.0),
                 ],
               ),
