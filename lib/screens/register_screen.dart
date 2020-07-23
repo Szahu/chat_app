@@ -34,6 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Widget _buildEmailInputField() {
       return Container(
         decoration: textInputBoxDecoration,
+        margin: EdgeInsets.symmetric(horizontal: 6.0),
         child: TextFormField(
           onChanged: (value) => _inputEmail = value.trimRight(),
           textAlign: TextAlign.center,
@@ -45,6 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Widget _buildPasswordInputField() {
       return Container(
         decoration: textInputBoxDecoration,
+        margin: EdgeInsets.symmetric(horizontal: 6.0),
         child: TextFormField(
           onChanged: (value) => _inputPassword = value.trimRight(),
           textAlign: TextAlign.center,
@@ -57,6 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Widget _buildPasswordRepeatInputField() {
       return Container(
         decoration: textInputBoxDecoration,
+        margin: EdgeInsets.symmetric(horizontal: 6.0),
         child: TextFormField(
           onChanged: (value) => _inputPasswordConfrim = value.trimRight(),
           textAlign: TextAlign.center,
@@ -157,7 +160,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 50.0),
+        padding: EdgeInsets.symmetric(horizontal: 44.0),
         child: Form(
           key: _formKey,
           child: Container(

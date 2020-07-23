@@ -8,7 +8,7 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
-  bool showSignIn = false;
+  bool showSignIn = true;
   Widget _loginScreen;
   Widget _registerScreen;
   _AuthenticateState() {
@@ -16,12 +16,14 @@ class _AuthenticateState extends State<Authenticate> {
     _registerScreen = RegisterScreen(toggleView: toggleView);
   }
   void toggleView() {
-    /*setState(() {
-      showSignIn = !showSignIn;
-    });*/
     Widget nextPage = showSignIn ? _registerScreen : _loginScreen;
-    showSignIn = !showSignIn;
-    Navigator.of(context).push(_createRoute(nextPage, showSignIn));
+    if (showSignIn) {
+      showSignIn = !showSignIn;
+      Navigator.of(context).push(_createRoute(nextPage, showSignIn));
+    } else {
+      showSignIn = !showSignIn;
+      Navigator.of(context).pop();
+    }
   }
 
   Route _createRoute(Widget nextPage, bool up) {

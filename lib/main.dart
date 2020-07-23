@@ -1,7 +1,8 @@
 import 'package:chat_app/screens/auth_wrapper.dart';
-import 'package:chat_app/screens/login_screen.dart';
-import 'package:chat_app/screens/register_screen.dart';
+import 'package:chat_app/screens/main_wrapper.dart';
+import 'package:chat_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,6 +11,9 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Authenticate());
+    return StreamProvider<User>.value(
+      value: AuthService().getUser,
+      child: MaterialApp(home: MainWrapper()),
+    );
   }
 }

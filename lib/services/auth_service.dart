@@ -9,11 +9,15 @@ class User {
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  User loggedUser;
   AuthService._internal();
 
   factory AuthService() {
     return _instance;
+  }
+
+  Stream<User> get getUser {
+    return _auth.onAuthStateChanged.map(_userFromFirebaseUser);
   }
 
   User _userFromFirebaseUser(FirebaseUser user) {
@@ -68,10 +72,20 @@ class AuthService {
       AuthResult result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       FirebaseUser user = result.user;
+      loggedUser = _userFromFirebaseUser(user);
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
       return _handleErrors(e.code.toString());
+    }
+  }
+
+  Future signOut() async {
+    try {
+      return await _auth.signOut();
+    } catch (e) {
+      print(e.toString());
+      return null;
     }
   }
 
