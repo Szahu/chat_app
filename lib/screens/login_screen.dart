@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:chat_app/Utils/constants.dart';
-import 'package:chat_app/screens/register_screen.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,29 +58,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
 
-    Future<void> _showDialogBox(String dialogText) async {
-      setState(() {
-        _applyBlur = true;
-      });
-      return showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error!'),
-            content: Text(dialogText),
-            actions: <Widget>[
-              FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _applyBlur = false;
-                  },
-                  child: Text('Okay'))
-            ],
-          );
-        },
-      );
-    }
-
     Widget _buildSignInButton() {
       return Container(
         decoration: textInputBoxDecoration.copyWith(color: Colors.transparent),
@@ -97,52 +73,59 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: EdgeInsets.symmetric(horizontal: 37.0, vertical: 10.0),
             color: Colors.blue,
             onPressed: () async {
-              FocusScope.of(context).unfocus();
-              setState(() {
-                _loading = true;
-                _applyBlur = true;
-              });
               if (_inputEmail != null && _inputPassword != null) {
+                FocusScope.of(context).unfocus();
+                setState(() {
+                  _loading = true;
+                  _applyBlur = true;
+                });
                 dynamic result = await AuthService()
                     .signInWithEmailAndPassword(_inputEmail, _inputPassword);
 
-                switch (result) {
-                  case 1:
-                    {
-                      print('invalid email');
-                      _showDialogBox('invalid email');
-                    }
-                    break;
-                  case 2:
-                    {
-                      print('invalid password');
-                      _showDialogBox('invalid password');
-                    }
-                    break;
-                  case 3:
-                    {
-                      print('user not found');
-                      _showDialogBox('user not found');
-                    }
-                    break;
-                  case 4:
-                    {
-                      print('too many requesst');
-                      _showDialogBox('too many requesst');
-                    }
-                    break;
-                  default:
-                    {
-                      print('somehing went wrong');
-                      _showDialogBox('somehing went wrong');
-                    }
-                    break;
+                if (result is int) {
+                  switch (result) {
+                    case 1:
+                      {
+                        print('invalid email');
+                        showDialogBox(context, 'Error - Invalid email!',
+                            'The email is wrongly formatted.');
+                      }
+                      break;
+                    case 2:
+                      {
+                        print('invalid password');
+                        showDialogBox(context, 'Error - Invalid password!',
+                            'Provided password doesn\'t fit given email.');
+                      }
+                      break;
+                    case 3:
+                      {
+                        print('user not found');
+                        showDialogBox(context, 'Error - User not found!',
+                            'There is no registered user with given credentials.');
+                      }
+                      break;
+                    case 4:
+                      {
+                        print('too many requesst');
+                        showDialogBox(context, 'Error - Too many requsests',
+                            'There were too many attempts, please try later.');
+                      }
+                      break;
+                    default:
+                      {
+                        print('somehing went wrong');
+                        showDialogBox(context, 'Error - Unexpected error',
+                            'Something went wrong :(');
+                      }
+                      break;
+                  }
                 }
+                setState(() {
+                  _loading = false;
+                  _applyBlur = false;
+                });
               }
-              setState(() {
-                _loading = false;
-                _applyBlur = false;
-              });
             }),
       );
     }

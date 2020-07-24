@@ -25,3 +25,42 @@ class Loading extends StatelessWidget {
     );
   }
 }
+
+Future<void> showDialogBox(
+    BuildContext context, String dialogTitle, String dialogText) async {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return ButtonBarTheme(
+        data: ButtonBarThemeData(alignment: MainAxisAlignment.center),
+        child: AlertDialog(
+          title: CenterHorizontal(
+            Text(
+              dialogTitle,
+              style: TextStyle(
+                color: Colors.red[600],
+              ),
+            ),
+          ),
+          content: Text(dialogText, style: TextStyle(fontSize: 18.0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(15.0),
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Okay',
+                style: TextStyle(fontSize: 17.0),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}

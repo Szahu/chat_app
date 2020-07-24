@@ -24,7 +24,7 @@ class AuthService {
     return user != null ? User(user.uid) : null;
   }
 
-  int _handleErrors(String errorCode) {
+  int _handleSignInErrors(String errorCode) {
     switch (errorCode) {
       case 'ERROR_INVALID_EMAIL':
         {
@@ -54,6 +54,31 @@ class AuthService {
     }
   }
 
+  int _handleRegisterErrors(String errorCode) {
+    switch (errorCode) {
+      case 'ERROR_INVALID_EMAIL':
+        {
+          return 1;
+        }
+        break;
+      case 'ERROR_WEAK_PASSWORD':
+        {
+          return 2;
+        }
+        break;
+      case 'ERROR_EMAIL_ALREADY_IN_USE':
+        {
+          return 3;
+        }
+        break;
+      default:
+        {
+          return 0;
+        }
+        break;
+    }
+  }
+
   Future registerWithEmailAndPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
@@ -62,7 +87,7 @@ class AuthService {
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
-      return _handleErrors(e.code.toString());
+      return _handleRegisterErrors(e.code.toString());
     }
   }
 
@@ -76,7 +101,7 @@ class AuthService {
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
-      return _handleErrors(e.code.toString());
+      return _handleSignInErrors(e.code.toString());
     }
   }
 

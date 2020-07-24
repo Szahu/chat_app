@@ -1,5 +1,6 @@
+import 'dart:ui';
+
 import 'package:chat_app/Utils/constants.dart';
-import 'package:chat_app/screens/login_screen.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_app/Utils/utils.dart';
@@ -16,6 +17,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _inputPassword;
   String _inputPasswordConfrim;
   final _formKey = GlobalKey<FormState>();
+  bool _applyBlur = false;
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     }
 
-    Widget _buildSignInButton() {
+    Widget _buildRegisterButton() {
       return Container(
         decoration: textInputBoxDecoration.copyWith(color: Colors.transparent),
         child: RaisedButton(
@@ -84,25 +87,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             padding: EdgeInsets.symmetric(horizontal: 37.0, vertical: 10.0),
             color: Colors.blue,
-            onPressed: () {
+            onPressed: () async {
               // TODO add helper texts with errors
               if (_inputEmail != null &&
                   _inputPassword != null &&
                   _inputPasswordConfrim != null) {
+                setState(() {
+                  _loading = true;
+                  _applyBlur = true;
+                });
                 if (_inputPassword == _inputPasswordConfrim) {
-                  AuthService().registerWithEmailAndPassword(
-                      _inputEmail, _inputPasswordConfrim);
+                  dynamic result = await AuthService()
+                      .registerWithEmailAndPassword(
+                          _inputEmail, _inputPasswordConfrim);
+                  if (result is int) {
+                    switch (result) {
+                      case 1:
+                        {
+                          print('invalid email');
+                          showDialogBox(context, 'Error - Invalid email!',
+                              'The email is wrongly formatted.');
+                        }
+                        break;
+                      case 2:
+                        {
+                          print('weak password');
+                          showDialogBox(context, 'Error - Weak password!',
+                              'Provided password is too weak.');
+                        }
+                        break;
+                      case 3:
+                        {
+                          print('Email already in use');
+                          showDialogBox(
+                              context,
+                              'Error - Email already in use!',
+                              'This email is already assigned to another account.');
+                        }
+                        break;
+                      default:
+                        {
+                          print('somehing went wrong');
+                          showDialogBox(context, 'Error - Unexpected error',
+                              'Something went wrong :(');
+                        }
+                        break;
+                    }
+                  }
                 } else {
                   print('Passwords must match!');
+                  showDialogBox(context, 'Error - Passwords must match!',
+                      'Given passwords doesn\'t match');
                 }
               } else {
                 print('No field can be empty!');
               }
+              setState(() {
+                _loading = false;
+                _applyBlur = false;
+              });
             }),
       );
     }
 
-    Widget _buildRegisterButton() {
+    Widget _buildSignInButton() {
       return Container(
         decoration: textInputBoxDecoration.copyWith(color: Colors.transparent),
         child: RaisedButton(
@@ -158,42 +206,64 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     }
 
+    Widget _blurFilter() {
+      return !_applyBlur
+          ? Container()
+          : BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 2,
+                sigmaY: 2,
+              ),
+              child: Container(
+                color: Colors.black.withOpacity(0),
+              ),
+            );
+    }
+
+    Widget _buildLoadingIcon() {
+      return _loading ? Loading() : Container();
+    }
+
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 44.0),
-        child: Form(
-          key: _formKey,
-          child: Container(
-            alignment: Alignment.center,
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 30.0),
-                  _buildTitleText(),
-                  SizedBox(height: 55),
-                  _buildEmailInputField(),
-                  SizedBox(height: 35),
-                  _buildPasswordInputField(),
-                  SizedBox(height: 35),
-                  _buildPasswordRepeatInputField(),
-                  SizedBox(height: 35),
-                  _buildSignInButton(),
-                  SizedBox(height: 20),
-                  Text(
-                    '- OR -',
-                    style: TextStyle(color: Colors.grey, fontSize: 15.0),
-                  ),
-                  SizedBox(height: 18),
-                  _buildLogInIcons(),
-                  SizedBox(height: 20.0),
-                  _buildRegisterButton(),
-                  SizedBox(height: 20.0),
-                ],
+      body: Stack(children: <Widget>[
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 44.0),
+          child: Form(
+            key: _formKey,
+            child: Container(
+              alignment: Alignment.center,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(height: 30.0),
+                    _buildTitleText(),
+                    SizedBox(height: 55),
+                    _buildEmailInputField(),
+                    SizedBox(height: 35),
+                    _buildPasswordInputField(),
+                    SizedBox(height: 35),
+                    _buildPasswordRepeatInputField(),
+                    SizedBox(height: 35),
+                    _buildRegisterButton(),
+                    SizedBox(height: 20),
+                    Text(
+                      '- OR -',
+                      style: TextStyle(color: Colors.grey, fontSize: 15.0),
+                    ),
+                    SizedBox(height: 18),
+                    _buildLogInIcons(),
+                    SizedBox(height: 20.0),
+                    _buildSignInButton(),
+                    SizedBox(height: 20.0),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+        _blurFilter(),
+        _buildLoadingIcon(),
+      ]),
     );
   }
 }
