@@ -88,7 +88,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: EdgeInsets.symmetric(horizontal: 37.0, vertical: 10.0),
             color: Colors.blue,
             onPressed: () async {
-              // TODO add helper texts with errors
               if (_inputEmail != null &&
                   _inputPassword != null &&
                   _inputPasswordConfrim != null) {
@@ -100,6 +99,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   dynamic result = await AuthService()
                       .registerWithEmailAndPassword(
                           _inputEmail, _inputPasswordConfrim);
+                  if (result is! int) {
+                    widget.toggleView(context);
+                  }
                   if (result is int) {
                     switch (result) {
                       case 1:
@@ -136,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   }
                 } else {
                   print('Passwords must match!');
-                  showDialogBox(context, 'Error - Passwords must match!',
+                  showDialogBox(context, 'Error - Passwords no match!',
                       'Given passwords doesn\'t match');
                 }
               } else {
@@ -165,7 +167,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.0),
             color: Colors.blue,
             onPressed: () {
-              widget.toggleView();
+              widget.toggleView(context);
             }),
       );
     }

@@ -15,18 +15,20 @@ class _AuthenticateState extends State<Authenticate> {
     _loginScreen = LoginScreen(toggleView: toggleView);
     _registerScreen = RegisterScreen(toggleView: toggleView);
   }
-  void toggleView() {
+  void toggleView(BuildContext context) {
     Widget nextPage = showSignIn ? _registerScreen : _loginScreen;
     if (showSignIn) {
       showSignIn = !showSignIn;
-      Navigator.of(context).push(_createRoute(nextPage, showSignIn));
+
+      Navigator.of(context).push(_createRoute(context, nextPage, showSignIn));
     } else {
       showSignIn = !showSignIn;
+
       Navigator.of(context).pop();
     }
   }
 
-  Route _createRoute(Widget nextPage, bool up) {
+  Route _createRoute(BuildContext context, Widget nextPage, bool up) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => nextPage,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -48,9 +50,9 @@ class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
     if (showSignIn) {
-      return Container(child: LoginScreen(toggleView: toggleView));
+      return Container(child: _loginScreen);
     } else {
-      return Container(child: RegisterScreen(toggleView: toggleView));
+      return Container(child: _registerScreen);
     }
   }
 }

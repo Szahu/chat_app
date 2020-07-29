@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:chat_app/services/dataBase_service.dart';
 
 class User {
   User(this.uid);
@@ -11,6 +12,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User loggedUser;
   AuthService._internal();
+  String _currentUserUid;
 
   factory AuthService() {
     return _instance;
@@ -22,6 +24,17 @@ class AuthService {
 
   User _userFromFirebaseUser(FirebaseUser user) {
     return user != null ? User(user.uid) : null;
+  }
+
+  Future updateCurrentUserUid() async {
+    final user = await FirebaseAuth.instance.currentUser();
+    _currentUserUid = user.uid.toString();
+    return null;
+  }
+
+  String getCurrentUserUid() {
+    updateCurrentUserUid();
+    return _currentUserUid;
   }
 
   int _handleSignInErrors(String errorCode) {
@@ -84,6 +97,7 @@ class AuthService {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       FirebaseUser user = result.user;
+      DataBaseService().createUserData(user.uid);
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
@@ -91,7 +105,6 @@ class AuthService {
     }
   }
 
-  // TODO add error handling
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.signInWithEmailAndPassword(

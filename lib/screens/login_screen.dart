@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.0),
             color: Colors.blue,
             onPressed: () {
-              widget.toggleView();
+              widget.toggleView(context);
             }),
       );
     }
