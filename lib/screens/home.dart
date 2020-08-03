@@ -2,8 +2,17 @@ import 'package:chat_app/Utils/utils.dart';
 import 'package:chat_app/screens/home/browse_conversations_screen.dart';
 import 'package:chat_app/screens/home/browse_users_screen.dart';
 import 'package:chat_app/screens/home/profile_screen.dart';
+import 'package:chat_app/services/auth_service.dart';
+import 'package:chat_app/services/dataBase_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/elusive_icons.dart';
+import 'package:fluttericon/entypo_icons.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:fluttericon/fontelico_icons.dart';
+import 'package:fluttericon/iconic_icons.dart';
+import 'package:fluttericon/modern_pictograms_icons.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,14 +25,16 @@ class _HomeState extends State<Home> {
   );
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
     Widget _buildNavigationButton(Function onTap, Icon icon) {
-      return RawMaterialButton(
-        onPressed: onTap,
-        child: icon,
-        shape: CircleBorder(),
-        padding: EdgeInsets.all(2.0),
-        focusColor: Colors.black.withOpacity(0.0),
-        highlightColor: Colors.transparent,
+      return Expanded(
+        child: RawMaterialButton(
+          onPressed: onTap,
+          child: icon,
+          focusColor: Colors.black.withOpacity(0.0),
+          highlightColor: Colors.transparent,
+          padding: EdgeInsets.symmetric(vertical: 13.0),
+        ),
       );
     }
 
@@ -33,46 +44,44 @@ class _HomeState extends State<Home> {
           controller: _pageController,
           children: <Widget>[
             BrowseConversationsScreen(),
-            BrowseUsersScreen(),
+            StreamProvider<List<UserData>>.value(
+                initialData: List(),
+                value: DataBaseService().usersData,
+                child: BrowseUsersScreen()),
             ProfileScreen(),
           ],
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Container(
-            margin: EdgeInsets.symmetric(vertical: 0.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                _buildNavigationButton(() {
-                  _pageController.animateToPage(0,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.ease);
-                },
-                    Icon(
-                      Icons.message,
-                      color: Colors.blue,
-                    )),
-                _buildNavigationButton(() {
-                  _pageController.animateToPage(1,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.ease);
-                },
-                    Icon(
-                      Icons.people,
-                      color: Colors.blue,
-                    )),
-                _buildNavigationButton(() {
-                  _pageController.animateToPage(2,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.ease);
-                },
-                    Icon(
-                      Icons.person,
-                      color: Colors.blue,
-                    )),
-              ],
-            )),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            _buildNavigationButton(() {
+              _pageController.animateToPage(0,
+                  duration: Duration(milliseconds: 200), curve: Curves.ease);
+            },
+                Icon(
+                  Iconic.chat,
+                  color: Colors.blue,
+                )),
+            _buildNavigationButton(() {
+              _pageController.animateToPage(1,
+                  duration: Duration(milliseconds: 200), curve: Curves.ease);
+            },
+                Icon(
+                  Iconic.book,
+                  color: Colors.blue,
+                )),
+            _buildNavigationButton(() {
+              _pageController.animateToPage(2,
+                  duration: Duration(milliseconds: 200), curve: Curves.ease);
+            },
+                Icon(
+                  Iconic.user,
+                  color: Colors.blue,
+                )),
+          ],
+        ),
       ),
     );
   }

@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:chat_app/services/dataBase_service.dart';
 
 class User {
-  User(this.uid);
+  User({this.uid, this.userData});
   final String uid;
+  final UserData userData;
 }
 
 class AuthService {
@@ -23,7 +24,12 @@ class AuthService {
   }
 
   User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(user.uid) : null;
+    return user != null
+        ? User(
+            uid: user.uid,
+            userData: UserData(
+                name: 'new Name', profile_picture: 'url', uid: user.uid))
+        : null;
   }
 
   Future updateCurrentUserUid() async {
