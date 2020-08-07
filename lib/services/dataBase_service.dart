@@ -10,15 +10,16 @@ class UserData {
 
 class MessageData {
   final String sender;
-  final String text;
-  final DateTime time;
-  MessageData({this.sender, this.text, this.time});
+  final String message;
+  final String timeStamp;
+  MessageData({this.sender, this.message, this.timeStamp});
 }
 
 class ConversationData {
-  List<String> users_uids;
-  List<MessageData> messages;
-  ConversationData({this.users_uids, this.messages = List<MessageData>()});
+  List<dynamic> users_uids;
+  Stream<List<MessageData>> messagesStream;
+  String documentPath;
+  ConversationData({this.users_uids, this.messagesStream, this.documentPath});
 }
 
 class DataBaseService {
@@ -48,6 +49,34 @@ class DataBaseService {
     return _usersCollection.snapshots().map(_userDataFromSnapshot);
   }
 
+  List<MessageData> _messageDataFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      return MessageData(
+          message: doc.data['message'],
+          timeStamp: doc.data['timeStamp'],
+          sender: doc.data['sender']);
+    }).toList();
+  }
+
+  List<ConversationData> _convDataFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.documents.map((doc) {
+      return ConversationData(
+          users_uids: doc.data['users'],
+          messagesStream: doc.reference
+              .collection('messages')
+              .snapshots()
+              .map(_messageDataFromSnapshot),
+          documentPath: doc.reference.path);
+    }).toList();
+  }
+
+  Stream<List<ConversationData>> getConvData(dynamic uid) {
+    return _convsDataCollection
+        .where('users', arrayContains: uid)
+        .snapshots()
+        .map(_convDataFromSnapshot);
+  }
+
   void createUserData(String uid) {
     _usersCollection.document(uid).setData({
       'name': 'new name',
@@ -58,11 +87,20 @@ class DataBaseService {
   }
 
   void updateUserData(
-      String uid, String name, String profile_pic_url, List<String> conv_refs) {
+      {String uid,
+      String name,
+      String profile_pic_url,
+      List<String> conv_refs}) {
     _usersCollection.document(uid).updateData({
       'name': name ?? 'nameWasNull',
       'conversation_refrences': conv_refs ?? [],
       'profile_picture': profile_pic_url ?? 'urlWasNull'
+    });
+  }
+
+  void updateUserName(uid, {String name}) {
+    _usersCollection.document(uid).updateData({
+      'name': name ?? 'nameWasNull',
     });
   }
 
@@ -86,7 +124,9 @@ class DataBaseService {
     });
     print(userUids);
     await _convsDataCollection.add({
-      'users': ['essa1', 'essa2'],
+      'users': users.map((e) {
+        return e.uid;
+      }).toList(),
     }).then((docRef) {
       newConvRef = docRef.path;
     }).catchError((error) => print(error.toString()));
@@ -114,12 +154,15 @@ class DataBaseService {
         .collection('messages')
         .add({
       'message': message,
-      'sender:': sendersUid,
+      'sender': sendersUid,
       'timeStamp': DateTime.now()
+          .difference(DateTime.utc(2020, 5, 7, 12, 00))
+          .inSeconds
+          .toString()
     });
   }
 
-  Future<List<ConversationData>> getConversations(String uid) async {
+  /*Future<List<ConversationData>> getConversations(String uid) async {
     List<String> refs = List<String>();
     await _usersCollection.document(uid).get().then((doc) {
       refs = doc.data['conversation_refrences'];
@@ -145,5 +188,5 @@ class DataBaseService {
           .getDocuments()
           .then((doc) {convData.messages.});
     });
-  }
+  }*/
 }

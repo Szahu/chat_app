@@ -1,4 +1,3 @@
-import 'package:chat_app/Utils/utils.dart';
 import 'package:chat_app/screens/home/browse_conversations_screen.dart';
 import 'package:chat_app/screens/home/browse_users_screen.dart';
 import 'package:chat_app/screens/home/profile_screen.dart';
@@ -6,12 +5,7 @@ import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/dataBase_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttericon/elusive_icons.dart';
-import 'package:fluttericon/entypo_icons.dart';
-import 'package:fluttericon/font_awesome_icons.dart';
-import 'package:fluttericon/fontelico_icons.dart';
 import 'package:fluttericon/iconic_icons.dart';
-import 'package:fluttericon/modern_pictograms_icons.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -43,7 +37,10 @@ class _HomeState extends State<Home> {
         child: PageView(
           controller: _pageController,
           children: <Widget>[
-            BrowseConversationsScreen(),
+            StreamProvider<List<ConversationData>>.value(
+                initialData: List(),
+                value: DataBaseService().getConvData(user.uid),
+                child: BrowseConversationsScreen()),
             StreamProvider<List<UserData>>.value(
                 initialData: List(),
                 value: DataBaseService().usersData,
