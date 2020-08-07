@@ -1,5 +1,6 @@
 import 'package:chat_app/Utils/constants.dart';
 import 'package:chat_app/Utils/utils.dart';
+import 'package:chat_app/screens/home/pick_image.dart';
 import 'package:chat_app/services/auth_service.dart';
 import 'package:chat_app/services/dataBase_service.dart';
 import 'package:flutter/material.dart';
@@ -135,6 +136,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 40.0),
                     _buildNameRow(snapshot.data.name),
+                    RaisedButton(
+                        onPressed: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (BuildContext context) {
+                              return MyHomePage();
+                            }),
+                          );
+                        },
+                        child: Text('button')),
                   ],
                 ),
               );
